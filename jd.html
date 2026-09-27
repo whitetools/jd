@@ -132,7 +132,7 @@
     </div>
     <h2 id="mainTitle">正在直达京东 App</h2>
     <div class="sku-badge" id="skuBadge">SKU: --</div>
-    <p class="desc" id="subText"><span class="pulse-dot"></span>正在为您极速呼起手机京东...</p>
+    <p class="desc" id="subText"><span class="pulse-dot"></span>正在为您直冲京东 App 提交订单页...</p>
 
     <a id="mainBtn" class="btn-main" href="javascript:launchApp();">⚡ 立即打开京东 App 提交订单</a>
     <a id="webBtn" class="btn-sub" href="javascript:openMobileWeb();">🌐 打开手机网页版</a>
@@ -160,13 +160,16 @@
       document.getElementById('mainTitle').innerText = '京东现货 · 极速直达结算';
       document.getElementById('subText').innerHTML = '<span class="pulse-dot"></span>正在为您直冲京东 App 提交订单页...';
       document.getElementById('mainBtn').innerText = '⚡ 立即打开京东 App 提交订单';
-      const orderParam = JSON.stringify({ category: "jump", des: "fillOrder", skuId: String(sku), skuNum: String(num) });
+
+      // 核心升级：采用京东 App 官方内嵌交易通道 (des: 'm' 直冲 trade.m.jd.com 移动结算中心，杜绝降级回首页)
+      const tradeUrl = 'https://trade.m.jd.com/pay?sceneval=2&bid=&wdref=https://item.m.jd.com/product/' + sku + '?sceneval=2&_fd=jdm&scene=jd&isCanEdit=1&EncryptInfo=&Token=&commlist=' + sku + ',,1,' + sku + ',1,0,0&type=0&lg=0&supm=0#/index';
+      const orderParam = JSON.stringify({ category: "jump", des: "m", url: tradeUrl });
       schemeUrl = 'openapp.jdmobile://virtual?params=' + encodeURIComponent(orderParam);
     } else {
       document.getElementById('mainTitle').innerText = '京东商品详情';
       document.getElementById('subText').innerHTML = '<span class="pulse-dot"></span>正在为您调起京东 App 商品详情页...';
       document.getElementById('mainBtn').innerText = '🔍 立即打开京东 App 查看商品';
-      const detailParam = JSON.stringify({ category: "jump", des: "productDetail", skuId: String(sku) });
+      const detailParam = JSON.stringify({ category: "jump", des: "productDetail", skuId: String(sku), wareId: String(sku) });
       schemeUrl = 'openapp.jdmobile://virtual?params=' + encodeURIComponent(detailParam);
     }
 
@@ -177,7 +180,9 @@
     }
 
     function openMobileWeb() {
-      if (sku) {
+      if (type === 'order' && sku) {
+        window.location.href = 'https://trade.m.jd.com/pay?sceneval=2&bid=&wdref=https://item.m.jd.com/product/' + sku + '?sceneval=2&_fd=jdm&scene=jd&isCanEdit=1&EncryptInfo=&Token=&commlist=' + sku + ',,1,' + sku + ',1,0,0&type=0&lg=0&supm=0#/index';
+      } else if (sku) {
         window.location.href = 'https://item.m.jd.com/product/' + sku + '.html';
       } else {
         window.location.href = 'https://m.jd.com';
