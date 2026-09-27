@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>正在直达京东 App...</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Segoe UI", Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      text-align: center;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 36px 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid #f1f5f9;
+    }
+    .icon-box {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      border-radius: 18px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+      overflow: hidden;
+    }
+    .icon-box img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+    }
+    h2 {
+      font-size: 20px;
+      color: #0f172a;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .sku-badge {
+      display: inline-block;
+      background: #fef2f2;
+      color: #dc2626;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .btn-main {
+      display: block;
+      width: 100%;
+      padding: 15px 0;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 28px;
+      text-decoration: none;
+      border: none;
+      box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-main:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    }
+    .btn-sub {
+      display: block;
+      width: 100%;
+      padding: 13px 0;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 28px;
+      text-decoration: none;
+      margin-top: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-sub:active {
+      background: #e2e8f0;
+    }
+    .tip {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 24px;
+      line-height: 1.6;
+    }
+    .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #16a34a;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.4; transform: scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-box">
+      <img src="https://img10.360buyimg.com/img/jfs/t1/260718/39/14190/29034/67921302Fe7ba35bb/a39a00b740cf8d26.png" alt="京东">
+    </div>
+    <h2 id="mainTitle">正在直达京东 App</h2>
+    <div class="sku-badge" id="skuBadge">SKU: --</div>
+    <p class="desc" id="subText"><span class="pulse-dot"></span>正在为您极速呼起手机京东...</p>
+
+    <a id="mainBtn" class="btn-main" href="javascript:launchApp();">⚡ 立即打开京东 App 提交订单</a>
+    <a id="webBtn" class="btn-sub" href="javascript:openMobileWeb();">🌐 打开手机网页版</a>
+
+    <div class="tip">
+      若系统未自动弹出提示，请点击上方红色按钮<br>
+      或点击右上角「<strong>···</strong>」选择在系统默认浏览器中打开
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const sku = urlParams.get('sku') || '';
+    const type = urlParams.get('type') || 'order'; // 'order' or 'detail'
+    const num = urlParams.get('num') || '1';
+
+    if (sku) {
+      document.getElementById('skuBadge').innerText = '商品编号: ' + sku;
+    } else {
+      document.getElementById('skuBadge').style.display = 'none';
+    }
+
+    let schemeUrl = '';
+    if (type === 'order') {
+      document.getElementById('mainTitle').innerText = '京东现货 · 极速直达结算';
+      document.getElementById('subText').innerHTML = '<span class="pulse-dot"></span>正在为您直冲京东 App 提交订单页...';
+      document.getElementById('mainBtn').innerText = '⚡ 立即打开京东 App 提交订单';
+      const orderParam = JSON.stringify({ category: "jump", des: "fillOrder", skuId: String(sku), skuNum: String(num) });
+      schemeUrl = 'openapp.jdmobile://virtual?params=' + encodeURIComponent(orderParam);
+    } else {
+      document.getElementById('mainTitle').innerText = '京东商品详情';
+      document.getElementById('subText').innerHTML = '<span class="pulse-dot"></span>正在为您调起京东 App 商品详情页...';
+      document.getElementById('mainBtn').innerText = '🔍 立即打开京东 App 查看商品';
+      const detailParam = JSON.stringify({ category: "jump", des: "productDetail", skuId: String(sku) });
+      schemeUrl = 'openapp.jdmobile://virtual?params=' + encodeURIComponent(detailParam);
+    }
+
+    function launchApp() {
+      if (schemeUrl) {
+        window.location.href = schemeUrl;
+      }
+    }
+
+    function openMobileWeb() {
+      if (sku) {
+        window.location.href = 'https://item.m.jd.com/product/' + sku + '.html';
+      } else {
+        window.location.href = 'https://m.jd.com';
+      }
+    }
+
+    // 页面进入瞬间自动触发 App 唤醒广播
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(launchApp, 80);
+    });
+  </script>
+</body>
+</html>
